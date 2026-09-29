@@ -2,13 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
-
+import axios from "axios"
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -19,7 +18,7 @@ function Register() {
     confirmPassword: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {
@@ -82,7 +81,29 @@ function Register() {
     console.log("Email:", email);
     console.log("Password:", password);
 
-    toast.success("Registration validation successful");
+    try {
+      const response = await axios.post(
+        "http://localhost:2001/api/auth/register", {
+        name,
+        email,
+        password,
+      })
+      console.log(response.data)
+      toast.success("Account Created Successfully")
+setName("")
+setEmail("")
+setPassword("")
+setConfirmPassword("")
+
+    } catch (error) {
+      if (error.response?.status === 400) {
+        toast.error("Email already exists");
+      } else {
+        toast.error("Registration failed");
+      }
+
+      console.log(error);
+    }
   };
 
   return (
@@ -122,9 +143,8 @@ function Register() {
                 <input
                   type="text"
                   placeholder="Enter your name"
-                  className={`input w-full ${
-                    errors.name ? "input-error" : ""
-                  }`}
+                  className={`input w-full ${errors.name ? "input-error" : ""
+                    }`}
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
@@ -152,9 +172,8 @@ function Register() {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className={`input w-full ${
-                    errors.email ? "input-error" : ""
-                  }`}
+                  className={`input w-full ${errors.email ? "input-error" : ""
+                    }`}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -183,9 +202,8 @@ function Register() {
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a password"
-                    className={`input w-full pr-12 ${
-                      errors.password ? "input-error" : ""
-                    }`}
+                    className={`input w-full pr-12 ${errors.password ? "input-error" : ""
+                      }`}
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
@@ -231,11 +249,10 @@ function Register() {
                       showConfirmPassword ? "text" : "password"
                     }
                     placeholder="Confirm your password"
-                    className={`input w-full pr-12 ${
-                      errors.confirmPassword
-                        ? "input-error"
-                        : ""
-                    }`}
+                    className={`input w-full pr-12 ${errors.confirmPassword
+                      ? "input-error"
+                      : ""
+                      }`}
                     value={confirmPassword}
                     onChange={(e) => {
                       setConfirmPassword(e.target.value);
