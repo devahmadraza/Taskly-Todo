@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -13,8 +14,8 @@ function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     let newErrors = {
@@ -45,11 +46,30 @@ function Login() {
       return;
     }
 
-    // Validation passed
-    console.log("Email:", email);
-    console.log("Password:", password);
+    try {
+      setLoading(true);
+      const response = await axios.post("http://localhost:2001/api/auth/login", {
+        email, password
+      })
+      console.log(response.data)
+      toast.success("Login Successfull")
 
-    toast.success("Validation successful");
+    } catch (error) {
+      if (error.response?.status === 400) {
+        toast.error("Invalid email or password")
+
+      } else {
+        toast.error("Login Failed")
+      }
+      console.log(error)
+    } finally {
+      setLoading(false);
+    }
+setEmail("")
+setPassword("")
+    
+
+
   };
 
   return (
@@ -92,9 +112,8 @@ function Login() {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className={`input w-full ${
-                    errors.email ? "input-error" : ""
-                  }`}
+                  className={`input w-full ${errors.email ? "input-error" : ""
+                    }`}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -124,9 +143,8 @@ function Login() {
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className={`input w-full pr-12 ${
-                      errors.password ? "input-error" : ""
-                    }`}
+                    className={`input w-full pr-12 ${errors.password ? "input-error" : ""
+                      }`}
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
@@ -165,8 +183,10 @@ function Login() {
               <button
                 type="submit"
                 className="btn btn-primary w-full mt-4"
+                disabled={loading}
               >
-                Login
+                {loading ? (<> <span className="loading loading-spinner loading-sm"></span>
+                  Logging in...</>) : "Login"}
               </button>
 
             </form>

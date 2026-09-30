@@ -10,7 +10,7 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -82,6 +82,7 @@ function Register() {
     console.log("Password:", password);
 
     try {
+      setLoading(true)
       const response = await axios.post(
         "http://localhost:2001/api/auth/register", {
         name,
@@ -90,10 +91,10 @@ function Register() {
       })
       console.log(response.data)
       toast.success("Account Created Successfully")
-setName("")
-setEmail("")
-setPassword("")
-setConfirmPassword("")
+      setName("")
+      setEmail("")
+      setPassword("")
+      setConfirmPassword("")
 
     } catch (error) {
       if (error.response?.status === 400) {
@@ -103,8 +104,10 @@ setConfirmPassword("")
       }
 
       console.log(error);
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 py-10">
@@ -272,6 +275,7 @@ setConfirmPassword("")
                       )
                     }
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-primary"
+
                   >
                     {showConfirmPassword ? (
                       <EyeOff size={20} />
@@ -292,8 +296,16 @@ setConfirmPassword("")
               <button
                 type="submit"
                 className="btn btn-primary w-full mt-4"
+                disabled={loading}
               >
-                Create Account
+                {loading ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
               </button>
 
             </form>
