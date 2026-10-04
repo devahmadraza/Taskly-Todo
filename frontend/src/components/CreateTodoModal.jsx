@@ -2,7 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast"
 import axios from "axios";
 
-const CreateTodoModal = ({ onCreate, onClose }) => {
+const CreateTodoModal = ({ onCreate, onClose ,onTodoCreated }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
@@ -25,6 +25,7 @@ const CreateTodoModal = ({ onCreate, onClose }) => {
             toast.success("Todo created successfully");
 setTitle("")
 setDescription("")
+onTodoCreated(newTodo);
 onClose()
         } catch (error) {
             console.error(error);

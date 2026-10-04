@@ -4,49 +4,41 @@ import TodoStats from "../components/TodoStats";
 import CreateTodoModal from "../components/CreateTodoModal";
 import MyTodosHeader from "../components/MyTodosHeader";
 import TodoCard from "../components/TodoCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EmptyState from "../components/EmptyState"
+import axios from "axios";
 
 const Dashboard = () => {
-  const [todos, setTodos] = useState([
-    {
-      _id: "1",
-      title: "Complete MERN Project",
-      description: "Finish the Taskly backend.",
-      completed: false,
-    },
-    {
-      _id: "2",
-      title: "Learn React",
-      description: "Practice React props and state.",
-      completed: true,
-    },
-    {
-      _id: "3",
-      title: "Learn MongoDB",
-      description: "Practice MongoDB queries.",
-      completed: false,
-    },
-    {
-      _id: "4",
-      title: "Complete MERN Project",
-      description: "Finish the Taskly backend.",
-      completed: false,
-    },
-    {
-      _id: "5",
-      title: "Learn React",
-      description: "Practice React props and state.",
-      completed: true,
-    },
-    {
-      _id: "6",
-      title: "Learn MongoDB",
-      description: "Practice MongoDB queries.",
-      completed: false,
-    },
-  ]);
+  const [todos, setTodos] = useState([]);
   const [showModal, setShowModal] = useState(false);
+
+  const fetchTodos = async () => {
+    try {
+      const token = localStorage.getItem("token")
+      const response = await axios.get(
+        "http://localhost:2001/api/todos",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+
+          }
+
+        }
+      )
+      console.log("Todos:", response.data.todos);
+      setTodos(response.data.todos)
+    } catch (error) {
+      console.error(error);
+    }
+
+
+
+  }
+  useEffect(() => {
+
+    fetchTodos()
+
+  }, [])
   return (
     <>
       <Navbar />
@@ -81,6 +73,9 @@ const Dashboard = () => {
         {showModal && (
           <CreateTodoModal
             onClose={() => setShowModal(false)}
+            onTodoCreated={(newTodo => {
+              setTodos((prevTodos) => [...prevTodos, newTodo])
+            })}
           />
         )}
 
