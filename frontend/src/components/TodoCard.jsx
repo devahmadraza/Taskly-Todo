@@ -1,31 +1,64 @@
+import { Pencil, Trash2, Calendar,  } from "lucide-react";
 
-
-function TodoCard({ title, description, completed }) {
+ const TodoCard = ({ todo }) => {
     return (
-        <div className="card bg-base-100 border border-base-300 shadow-sm">
+        <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md hover:bg-base-300 transition-shadow">
+
             <div className="card-body">
 
-                <h2 className="text-xl font-semibold">
-                    {title}
-                </h2>
+                {/* Top */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
 
-                <p className="text-base-content/60">
-                    {description}
+                    <h3 className="text-lg font-bold">
+                        {todo.title}
+                    </h3>
+
+                    {todo.completed ? (
+                        <span className="badge badge-success">
+                            Completed
+                        </span>
+                    ) : (
+                        <span className="badge badge-warning">
+                            Pending
+                        </span>
+                    )}
+
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-base-content/60 mt-2">
+
+                    {todo.description}
                 </p>
 
-                <div>
-                    <span className="badge badge-warning">
-                        {completed ? (
-                            <span className="badge badge-success">Completed</span>
-                        ) : (
-                            <span className="badge badge-warning">Pending</span>
-                        )}
-                    </span>
+                {/* Bottom information */}
+                <div className="divider my-1"></div>
+
+                <div className="flex items-center text-sm text-base-content/60">
+                    <Calendar size={16} className="mr-2" />
+                    Today
+                </div>
+
+                {/* Actions */}
+                <div className="card-actions justify-end mt-2">
+
+                    <button className="btn btn-sm btn-ghost">
+                        <Pencil size={16} />
+                        Edit
+                    </button>
+
+                    <button className="btn btn-sm btn-ghost text-error">
+                        <Trash2 size={16} />
+                        Delete
+                    </button>
+
                 </div>
 
             </div>
+
         </div>
     );
-}
+};
 
-export default TodoCard;
+export default TodoCard
+

@@ -12,7 +12,8 @@ export const createTodo = async (req, res) => {
             userId: req.userId,
         })
         res.status(201).json({
-            message: "Todo Created Successfully"
+            message: "Todo Created Successfully",
+            todo,
         })
 
     } catch (error) {

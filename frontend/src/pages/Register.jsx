@@ -304,7 +304,7 @@ function Register() {
                     Logging in...
                   </>
                 ) : (
-                  "Login"
+                  "Register"
                 )}
               </button>
 
