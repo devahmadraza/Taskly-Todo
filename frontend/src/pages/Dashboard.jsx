@@ -29,6 +29,7 @@ const Dashboard = () => {
       setTodos(response.data.todos)
     } catch (error) {
       console.error(error);
+      console.error(error);
     }
 
 
