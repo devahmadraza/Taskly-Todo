@@ -1,6 +1,6 @@
-import { Pencil, Trash2, Calendar,  } from "lucide-react";
+import { Pencil, Trash2, Calendar, } from "lucide-react";
 
- const TodoCard = ({ todo }) => {
+const TodoCard = ({ todo, onEdit }) => {
     return (
         <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md hover:bg-base-300 transition-shadow">
 
@@ -26,7 +26,7 @@ import { Pencil, Trash2, Calendar,  } from "lucide-react";
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-base-content/60 mt-2">
+                <p className="text-sm text-base-content/60 mt-2 overflow-clip">
 
                     {todo.description}
                 </p>
@@ -42,7 +42,10 @@ import { Pencil, Trash2, Calendar,  } from "lucide-react";
                 {/* Actions */}
                 <div className="card-actions justify-end mt-2">
 
-                    <button className="btn btn-sm btn-ghost">
+                    <button
+                        className="btn btn-sm btn-ghost"
+                        onClick={() => onEdit(todo)}
+                    >
                         <Pencil size={16} />
                         Edit
                     </button>
