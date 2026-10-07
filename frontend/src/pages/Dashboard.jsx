@@ -5,7 +5,7 @@ import CreateTodoModal from "../components/CreateTodoModal";
 import MyTodosHeader from "../components/MyTodosHeader";
 import TodoCard from "../components/TodoCard";
 import { useState, useEffect } from "react";
-import EmptyState from "../components/EmptyState"
+import EmptyState from "../components/EmptyState";
 import EditTodoModal from "../components/EditTodoModal";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -22,6 +22,8 @@ const Dashboard = () => {
   const [error, setError] = useState(false);
   const fetchTodos = async () => {
     try {
+      setLoading(true);
+      setError(false);
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
@@ -30,23 +32,21 @@ const Dashboard = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          timeout: 5000,
         }
       );
 
       setTodos(response.data.todos);
     } catch (error) {
       console.error(error);
-    setError(true);
+      setError(true);
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-
-    fetchTodos()
-
-  }, [])
+    fetchTodos();
+  }, []);
 
   const handleDeleteTodo = async (todo) => {
     setDeletingId(todo._id);
@@ -59,6 +59,7 @@ const Dashboard = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+
         }
       );
 
@@ -134,64 +135,64 @@ const Dashboard = () => {
 
         <MyTodosHeader
           onCreate={() => setShowModal(true)}
-          onClose={() => setShowModal(false)}
         />
 
-       {loading ? (
-  <div className="flex justify-center py-12">
-    <span className="loading loading-spinner loading-lg text-primary"></span>
-  </div>
-) : error ? (
-  <div className="card bg-base-100 border border-base-300 shadow-sm">
-    <div className="card-body items-center text-center py-12">
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+          </div>
+        ) : error ? (
+          <div className="card bg-base-100 border border-base-300 shadow-sm">
+            <div className="card-body items-center text-center py-12">
 
-      <h3 className="text-xl font-bold">
-        Unable to load your todos.
-      </h3>
+              <h3 className="text-xl font-bold">
+                Unable to load your todos.
+              </h3>
 
-      <p className="text-base-content/60 mt-2">
-        Something went wrong while loading your tasks.
-      </p>
+              <p className="text-base-content/60 mt-2">
+                Something went wrong while loading your tasks.
+              </p>
 
-      <button
-        onClick={fetchTodos}
-        className="btn btn-primary mt-4"
-      >
-        Try Again
-      </button>
+              <button
+                onClick={fetchTodos}
+                className="btn btn-primary mt-4"
+              >
 
-    </div>
-  </div>
-) : todos.length === 0 ? (
-  <EmptyState
-    onCreate={() => setShowModal(true)}
-  />
-) : (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {todos.map((todo) => (
-      <TodoCard
-        key={todo._id}
-        todo={todo}
-        onEdit={(todo) => {
-          setEditingTodo(todo);
-        }}
-        onDelete={(todo) => {
-          setDeletingTodo(todo);
-        }}
-        deletingId={deletingId}
-        onToggleComplete={handleToggleComplete}
-        completingId={completingId}
-      />
-    ))}
-  </div>
-)}
-        {/* Todo cards will go here */}
+                Try Again
+              </button>
+
+            </div>
+          </div>
+        ) : todos.length === 0 ? (
+          <EmptyState
+            onCreate={() => setShowModal(true)}
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {todos.map((todo) => (
+              <TodoCard
+                key={todo._id}
+                todo={todo}
+                onEdit={(todo) => {
+                  setEditingTodo(todo);
+                }}
+                onDelete={(todo) => {
+                  setDeletingTodo(todo);
+                }}
+                deletingId={deletingId}
+                onToggleComplete={handleToggleComplete}
+                completingId={completingId}
+              />
+            ))}
+          </div>
+        )}
         {showModal && (
           <CreateTodoModal
             onClose={() => setShowModal(false)}
-            onTodoCreated={(newTodo => {
+
+            onTodoCreated={(newTodo) => {
               setTodos((prevTodos) => [...prevTodos, newTodo])
-            })}
+            }}
           />
         )}
 
