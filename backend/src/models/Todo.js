@@ -6,7 +6,9 @@ const todoSchema = new mongoose.Schema({
     completed: { type: Boolean, default: false },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
-})
+}, { timestamps: true, }
+
+)
 
 const Todo = mongoose.model("Todo", todoSchema)
 

@@ -1,6 +1,6 @@
 import { Pencil, Trash2, Calendar, } from "lucide-react";
 
-const TodoCard = ({ todo, onEdit }) => {
+const TodoCard = ({ todo, onEdit, onDelete, deletingId, onToggleComplete, completingId }) => {
     return (
         <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md hover:bg-base-300 transition-shadow">
 
@@ -36,7 +36,11 @@ const TodoCard = ({ todo, onEdit }) => {
 
                 <div className="flex items-center text-sm text-base-content/60">
                     <Calendar size={16} className="mr-2" />
-                    Today
+                    {new Date(todo.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                    })}
                 </div>
 
                 {/* Actions */}
@@ -50,9 +54,41 @@ const TodoCard = ({ todo, onEdit }) => {
                         Edit
                     </button>
 
-                    <button className="btn btn-sm btn-ghost text-error">
-                        <Trash2 size={16} />
-                        Delete
+                    <button
+                        onClick={() => onToggleComplete(todo)}
+                        className="btn btn-sm btn-ghost text-success"
+                        disabled={completingId === todo._id}
+                    >
+                        {completingId === todo._id ? (
+                            <>
+                                <span className="loading loading-spinner loading-xs"></span>
+                                Updating...
+                            </>
+                        ) : todo.completed ? (
+                            "Mark Pending"
+                        ) : (
+                            "Complete"
+                        )}
+                    </button>
+
+
+                    {/* DELETE BUTTON */}
+                    <button
+                        onClick={() => onDelete(todo)}
+                        className="btn btn-sm btn-ghost text-error"
+                        disabled={deletingId === todo._id}
+                    >
+                        {deletingId === todo._id ? (
+                            <>
+                                <span className="loading loading-spinner loading-xs"></span>
+                                Deleting...
+                            </>
+                        ) : (
+                            <>
+                                <Trash2 size={16} />
+                                Delete
+                            </>
+                        )}
                     </button>
 
                 </div>
