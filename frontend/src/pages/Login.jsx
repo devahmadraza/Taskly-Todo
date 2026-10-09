@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 
 function Login() {
   const navigate = useNavigate()
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("test@gmail.com");
+  const [password, setPassword] = useState("@Test1234");
 
   const [errors, setErrors] = useState({
     email: "",
@@ -49,12 +49,16 @@ function Login() {
 
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:2001/api/auth/login", {
-        email, password
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
       }
       )
       const token = response.data.token
       localStorage.setItem("token", token)
+      if (!token) {
+        throw new Error("Login response did not contain a token");
+      }
       window.dispatchEvent(new Event("authChanged"));
       navigate("/dashboard");
 

@@ -1,204 +1,143 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
-import toast from "react-hot-toast";
+import Navbar from "../components/Navbar";
+import {
+  UserRound,
+  Mail,
+  ArrowLeft,
+  LoaderCircle,
+  RefreshCw,
+} from "lucide-react";
+import axiosInstance from "../utils/axiosInstance";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+function Profile() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-  const [showPassword, setShowPassword] = useState(false);
+      const response = await axiosInstance.get("/auth/me");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    let newErrors = {
-      email: "",
-      password: "",
-    };
-
-    // Email validation
-    if (!email) {
-      newErrors.email = "Email is required";
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (!emailRegex.test(email)) {
-        newErrors.email = "Enter a valid email";
-      }
+      setUser(response.data.user);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Failed to load your profile. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    // Password validation
-    if (!password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-
-    // Stop if there are errors
-    if (newErrors.email || newErrors.password) {
-      return;
-    }
-
-    // Validation passed
-    console.log("Email:", email);
-    console.log("Password:", password);
-
-    toast.success("Validation successful");
   };
 
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-base-200">
+      <Navbar />
 
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link
-            to="/"
-            className="text-3xl font-bold text-primary"
-          >
-            Taskly
-          </Link>
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <Link
+          to="/dashboard"
+          className="btn btn-ghost btn-sm mb-6"
+        >
+          <ArrowLeft size={16} />
+          Back to Dashboard
+        </Link>
 
-          <p className="mt-2 text-base-content/70">
-            Welcome back! Please login to your account.
-          </p>
-        </div>
-
-        {/* Login Card */}
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="avatar placeholder">
+                <div className="bg-primary text-primary-content rounded-full w-16">
+                  <UserRound size={32} />
+                </div>
+              </div>
 
-            <h1 className="text-2xl font-bold text-center">
-              Login
-            </h1>
+              <div>
+                <h1 className="text-2xl font-bold">
+                  My Profile
+                </h1>
+                <p className="text-base-content/60">
+                  View your account information
+                </p>
+              </div>
+            </div>
 
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-            >
+            <div className="divider" />
 
-              {/* Email */}
-              <fieldset className="fieldset mt-4">
-                <label className="fieldset-legend">
-                  Email
-                </label>
-
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className={`input w-full ${
-                    errors.email ? "input-error" : ""
-                  }`}
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-
-                    // Remove error when user starts correcting
-                    setErrors({
-                      ...errors,
-                      email: "",
-                    });
-                  }}
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-3">
+                <LoaderCircle
+                  size={36}
+                  className="animate-spin text-primary"
                 />
-
-                {errors.email && (
-                  <p className="text-error text-sm mt-1">
-                    {errors.email}
-                  </p>
-                )}
-              </fieldset>
-
-              {/* Password */}
-              <fieldset className="fieldset">
-                <label className="fieldset-legend">
-                  Password
-                </label>
-
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className={`input w-full pr-12 ${
-                      errors.password ? "input-error" : ""
-                    }`}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-
-                      // Remove error when user starts correcting
-                      setErrors({
-                        ...errors,
-                        password: "",
-                      });
-                    }}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowPassword(!showPassword)
-                    }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-primary"
-                  >
-                    {showPassword ? (
-                      <EyeOff size={20} />
-                    ) : (
-                      <Eye size={20} />
-                    )}
-                  </button>
+                <p className="text-base-content/60">
+                  Loading your profile...
+                </p>
+              </div>
+            ) : error ? (
+              <div className="alert alert-error">
+                <div className="flex-1">
+                  <p>{error}</p>
                 </div>
 
-                {errors.password && (
-                  <p className="text-error text-sm mt-1">
-                    {errors.password}
-                  </p>
-                )}
-              </fieldset>
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={fetchProfile}
+                >
+                  <RefreshCw size={16} />
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  <div>
+                    <label className="label">
+                      <span className="label-text font-semibold">
+                        Full Name
+                      </span>
+                    </label>
 
-              {/* Login Button */}
-              <button
-                type="submit"
-                className="btn btn-primary w-full mt-4"
-              >
-                Login
-              </button>
+                    <div className="input input-bordered w-full flex items-center gap-3">
+                      <UserRound size={18} />
+                      <span>{user?.name || "Name unavailable"}</span>
+                    </div>
+                  </div>
 
-            </form>
+                  <div>
+                    <label className="label">
+                      <span className="label-text font-semibold">
+                        Email Address
+                      </span>
+                    </label>
 
-            {/* Register Link */}
-            <p className="text-center text-sm text-base-content/70 mt-4">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-primary font-semibold hover:underline"
-              >
-                Register
-              </Link>
-            </p>
+                    <div className="input input-bordered w-full flex items-center gap-3">
+                      <Mail size={18} />
+                      <span>{user?.email || "Email unavailable"}</span>
+                    </div>
+                  </div>
+                </div>
 
+                <p className="text-sm text-base-content/60 mt-4">
+                  This information belongs to your Taskly account.
+                </p>
+              </>
+            )}
           </div>
         </div>
-
-        {/* Back to Home */}
-        <div className="text-center mt-6">
-          <Link
-            to="/"
-            className="text-sm text-base-content/60 hover:text-primary"
-          >
-            ← Back to Home
-          </Link>
-        </div>
-
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Profile;
+
