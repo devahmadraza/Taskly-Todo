@@ -7,7 +7,7 @@ import TodoCard from "../components/TodoCard";
 import { useState, useEffect } from "react";
 import EmptyState from "../components/EmptyState";
 import EditTodoModal from "../components/EditTodoModal";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import toast from "react-hot-toast";
 import DeleteTodoModal from "../components/DeleteTodoModal";
 
@@ -26,7 +26,7 @@ const Dashboard = () => {
       setError(false);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         "http://localhost:2001/api/todos",
         {
           headers: {
@@ -53,7 +53,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
 
-      await axios.delete(
+      await axiosInstance.delete(
         `http://localhost:2001/api/todos/${todo._id}`,
         {
           headers: {
@@ -84,7 +84,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.put(
+      const response = await axiosInstance.put(
         `http://localhost:2001/api/todos/${todo._id}`,
         {
           completed: !todo.completed,

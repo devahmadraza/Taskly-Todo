@@ -1,16 +1,30 @@
-
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    window.dispatchEvent(new Event("authChanged"));
     navigate("/login");
   };
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    Boolean(localStorage.getItem("token"))
+  );
+  useEffect(() => {
+    const updateAuth = () => {
+      setIsLoggedIn(Boolean(localStorage.getItem("token")));
+    };
+
+    window.addEventListener("authChanged", updateAuth);
+
+    return () => {
+      window.removeEventListener("authChanged", updateAuth);
+    };
+  }, []);
   return (
     <div className="navbar bg-base-100 shadow-sm px-4 md:px-8">
-
       {/* Logo */}
       <div className="flex-1">
         <Link to="/" className="text-2xl font-bold text-primary">
@@ -21,20 +35,36 @@ function Navbar() {
       {/* Desktop Menu */}
       <div className="hidden md:flex">
         <ul className="menu menu-horizontal px-1 gap-2">
+
           <li>
             <Link to="/">Home</Link>
           </li>
+          {!isLoggedIn ? (<>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
 
-          <li
-            onClick={handleLogout}>
-            <Link to="/login">Logout</Link>
-          </li>
+            <li>
+              <Link to="/register" className="btn btn-primary">
+                Get Started
+              </Link>
+            </li>
+          </>
+          ) : (
+            <>
+              <li>
+                <button onClick={handleLogout} className="btn btn-primary">
+                  Logout
+                </button>
+              </li>
 
-          <li>
-            <Link to="/register" className="btn btn-primary">
-              Get Started
-            </Link>
-          </li>
+            </>
+
+
+          )}
+
+
+
         </ul>
       </div>
 
@@ -56,21 +86,33 @@ function Navbar() {
             <Link to="/">Home</Link>
           </li>
 
-          <li>
-            <button onClick={handleLogout}>
-              Logout
-            </button>
-          </li>
+          {!isLoggedIn ? (<>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
 
-          <li>
-            <Link to="/register">Get Started</Link>
-          </li>
+            <li>
+              <Link to="/register" className="btn btn-primary ">
+                Get Started
+              </Link>
+            </li>
+          </>
+          ) : (
+            <>
+              <li>
+                <button onClick={handleLogout} className="btn btn-primary">
+                  Logout
+                </button>
+              </li>
+
+            </>
+
+
+          )}
         </ul>
       </div>
-
     </div>
   );
 }
 
 export default Navbar;
-

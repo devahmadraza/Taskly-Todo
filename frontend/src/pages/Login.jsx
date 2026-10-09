@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
 function Login() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -51,11 +52,14 @@ function Login() {
       const response = await axios.post("http://localhost:2001/api/auth/login", {
         email, password
       }
-    )
-    const token =response.data.token
-    localStorage.setItem("token",token)
-      console.log(response.data)
+      )
+      const token = response.data.token
+      localStorage.setItem("token", token)
+      window.dispatchEvent(new Event("authChanged"));
+      navigate("/dashboard");
+
       toast.success("Login Successfull")
+
 
     } catch (error) {
       if (error.response?.status === 400) {
@@ -68,9 +72,9 @@ function Login() {
     } finally {
       setLoading(false);
     }
-setEmail("")
-setPassword("")
-    
+    setEmail("")
+    setPassword("")
+
 
 
   };
