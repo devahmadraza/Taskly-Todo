@@ -4,7 +4,8 @@ import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import App from "./App.jsx";
-
+import { applyTheme, getSavedTheme } from "./utils/theme";
+applyTheme(getSavedTheme());
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>

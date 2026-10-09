@@ -20,14 +20,21 @@ function Profile() {
     try {
       setLoading(true);
       setError("");
+      
+      const token = localStorage.getItem("token")
+      const response = await axiosInstance.get("/auth/me",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
 
-      const response = await axiosInstance.get("/auth/me");
-
+        }
+      );
       setUser(response.data.user);
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Failed to load your profile. Please try again."
+        "Failed to load your profile. Please try again."
       );
     } finally {
       setLoading(false);
