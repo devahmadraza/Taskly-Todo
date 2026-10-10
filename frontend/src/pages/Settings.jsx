@@ -109,7 +109,7 @@ function Settings() {
               <div>
                 <h2 className="card-title">Security</h2>
                 <p className="text-sm text-base-content/60">
-                  Manage your current session.
+                  Manage your current session easily.
                 </p>
               </div>
             </div>
