@@ -108,9 +108,7 @@ function Settings() {
               <ShieldCheck className="text-primary" size={24} />
               <div>
                 <h2 className="card-title">Security</h2>
-                <p className="text-sm text-base-content/60">
-                  Manage your current session easily.
-                </p>
+                <p className="text-sm text-base-content/60">Manage your current session.</p>
               </div>
             </div>
 
