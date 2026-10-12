@@ -6,6 +6,7 @@ export const createTodo = async (req, res) => {
 
         const { title, description } = req.body
 
+        if (typeof title !== "string" || !title.trim()) { return res.status(400).json({ message: "Title is required", }); }
         const todo = await Todo.create({
             title,
             description,
@@ -17,9 +18,15 @@ export const createTodo = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({
-            message: "Server error",
-        })
+        console.error("Create Todo error:", error);
+
+        if (error.name === "ValidationError") {
+            return res.status(400).json({ message: error.message });
+        }
+        if (error.name === "CastError") {
+            return res.status(400).json({ message: "Invalid field value", });
+        }
+        return res.status(500).json({ message: "Server error" });
     }
 
 }
@@ -50,13 +57,24 @@ export const getTodo = async (req, res) => {
 export const updateTodo = async (req, res) => {
     try {
         const { title, description, completed } = req.body;
-
+        if (title !== undefined && (typeof title !== "string" || !title.trim())) { return res.status(400).json({ message: "Title is required", }); }
         // Check if Todo ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
             return res.status(404).json({
                 message: "Todo not found",
             });
         }
+
+        // Validate completed: it must be a Boolean
+        if (
+            completed !== undefined &&
+            typeof completed !== "boolean"
+        ) {
+            return res.status(400).json({
+                message: "Completed must be true or false",
+            });
+        }
+
 
         const todo = await Todo.findOneAndUpdate(
             {

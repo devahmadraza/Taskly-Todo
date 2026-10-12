@@ -6,6 +6,20 @@ export const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body
 
+        if (
+            typeof name !== "string" ||
+            !name.trim() ||
+            typeof email !== "string" ||
+            !email.trim() ||
+            typeof password !== "string" ||
+            !password.trim()
+        ) {
+            return res.status(400).json({
+                message: "Name, email and password are required",
+            });
+        }
+
+
         const existingUser = await User.findOne({ email })
         if (existingUser) {
             return res.status(400).json({ message: "User already exists", });
