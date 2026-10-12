@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 function DashboardHeader({onCreate}) {
     const [name, setName] = useState()
-    const fullName = "Ahmad"
+    const fullName = "Ahmad Testing At this tiime"
     useEffect(() => {
         let index = 0
 

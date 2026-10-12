@@ -9,4 +9,4 @@ router.get("/", authMiddleware,getTodo)
 router.put("/:id", authMiddleware,updateTodo)
 router.delete("/:id", authMiddleware,deleteTodo)
 
-export default router
+export default router;

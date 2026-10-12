@@ -1,5 +1,5 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import {
   ArrowLeft,
   UserRound,
@@ -11,25 +11,36 @@ import {
   ChevronRight,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { useState } from "react";
+
+import Navbar from "../components/Navbar";
 import { getSavedTheme, applyTheme } from "../utils/theme";
 
 function Settings() {
   const navigate = useNavigate();
 
+  const [theme, setTheme] = useState(getSavedTheme());
+
+  // Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
+
     window.dispatchEvent(new Event("authChanged"));
 
     toast.success("Logged out successfully");
+
     navigate("/login");
   };
-  const [theme, setTheme] = useState(getSavedTheme());
 
+  // Change theme
   const handleThemeChange = (newTheme) => {
     applyTheme(newTheme);
     setTheme(newTheme);
+
+    toast.success(
+      `${newTheme === "light" ? "Light" : "Dark"} theme applied`
+    );
   };
+
   return (
     <div className="min-h-screen bg-base-200">
       <Navbar />
@@ -47,6 +58,7 @@ function Settings() {
         {/* Page Heading */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Settings</h1>
+
           <p className="text-base-content/60 mt-2">
             Manage your Taskly account and preferences.
           </p>
@@ -56,9 +68,14 @@ function Settings() {
         <div className="card bg-base-100 shadow-md mb-6">
           <div className="card-body">
             <div className="flex items-center gap-3 mb-2">
-              <UserRound className="text-primary" size={24} />
+              <UserRound
+                className="text-primary"
+                size={24}
+              />
+
               <div>
                 <h2 className="card-title">Account</h2>
+
                 <p className="text-sm text-base-content/60">
                   Manage your account information.
                 </p>
@@ -79,9 +96,14 @@ function Settings() {
         <div className="card bg-base-100 shadow-md mb-6">
           <div className="card-body">
             <div className="flex items-center gap-3 mb-2">
-              <Palette className="text-primary" size={24} />
+              <Palette
+                className="text-primary"
+                size={24}
+              />
+
               <div>
                 <h2 className="card-title">Appearance</h2>
+
                 <p className="text-sm text-base-content/60">
                   Customize how Taskly looks.
                 </p>
@@ -90,13 +112,34 @@ function Settings() {
 
             <div className="flex items-center justify-between gap-4 p-3">
               <div className="flex items-center gap-3">
-                <Sun size={20} />
-                <span>Light / Dark Theme</span>
+                {theme === "light" ? (
+                  <Sun size={20} />
+                ) : (
+                  <Moon size={20} />
+                )}
+
+                <div>
+                  <p className="font-medium">
+                    Light / Dark Theme
+                  </p>
+
+                  <p className="text-sm text-base-content/60">
+                    Choose your preferred theme.
+                  </p>
+                </div>
               </div>
 
-              <span className="badge badge-outline">
-                Coming next
-              </span>
+              <select
+                className="select select-bordered select-sm"
+                value={theme}
+                onChange={(e) =>
+                  handleThemeChange(e.target.value)
+                }
+                aria-label="Choose theme"
+              >
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
             </div>
           </div>
         </div>
@@ -105,10 +148,17 @@ function Settings() {
         <div className="card bg-base-100 shadow-md">
           <div className="card-body">
             <div className="flex items-center gap-3 mb-2">
-              <ShieldCheck className="text-primary" size={24} />
+              <ShieldCheck
+                className="text-primary"
+                size={24}
+              />
+
               <div>
                 <h2 className="card-title">Security</h2>
-                <p className="text-sm text-base-content/60">Manage your current session.</p>
+
+                <p className="text-sm text-base-content/60">
+                  Manage your current session.
+                </p>
               </div>
             </div>
 
@@ -128,4 +178,3 @@ function Settings() {
 }
 
 export default Settings;
-
