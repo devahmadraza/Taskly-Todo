@@ -10,7 +10,7 @@ import EditTodoModal from "../components/EditTodoModal";
 import axiosInstance from "../utils/axiosInstance";
 import toast from "react-hot-toast";
 import DeleteTodoModal from "../components/DeleteTodoModal";
-
+import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const [todos, setTodos] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -20,21 +20,13 @@ const Dashboard = () => {
   const [deletingTodo, setDeletingTodo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
   const fetchTodos = async () => {
     try {
       setLoading(true);
       setError(false);
-      const token = localStorage.getItem("token");
-
-      const response = await axiosInstance.get(
-        "http://localhost:2001/api/todos",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 5000,
-        }
-      );
+      const response = await axiosInstance.get("/todos");
 
       setTodos(response.data.todos);
     } catch (error) {
@@ -44,23 +36,27 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+  const fetchUser = async () => {
+    try {
+      const response = await axiosInstance.get("/auth/me");
+      setUserName(response.data.user.name);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+    }
+  };
   useEffect(() => {
     fetchTodos();
+    fetchUser();
+
   }, []);
 
   const handleDeleteTodo = async (todo) => {
     setDeletingId(todo._id);
     try {
-      const token = localStorage.getItem("token");
 
       await axiosInstance.delete(
-        `http://localhost:2001/api/todos/${todo._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        `/todos/${todo._id}`,
 
-        }
       );
 
       toast.success("Todo deleted successfully");
@@ -82,18 +78,14 @@ const Dashboard = () => {
   const handleToggleComplete = async (todo) => {
     setCompletingId(todo._id);
     try {
-      const token = localStorage.getItem("token");
+
 
       const response = await axiosInstance.put(
-        `http://localhost:2001/api/todos/${todo._id}`,
+        `/todos/${todo._id}`,
         {
           completed: !todo.completed,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+
       );
 
       const updatedTodo = response.data.todo;
@@ -124,7 +116,8 @@ const Dashboard = () => {
       <Navbar />
       <main className="max-w-6xl mx-auto px-6 py-8">
         <DashboardHeader
-          onCreate={() => setShowModal(true)}
+          onViewProfile={() => navigate("/profile")}
+          userName={userName}
         />
 
         <TodoStats

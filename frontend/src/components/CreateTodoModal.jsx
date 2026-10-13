@@ -1,37 +1,37 @@
 import { useState } from "react";
-import toast from "react-hot-toast"
-import axios from "axios";
+import toast from "react-hot-toast";
+import axiosInstance from "../utils/axiosInstance";
 
-const CreateTodoModal = ({ onCreate, onClose, onTodoCreated }) => {
+const CreateTodoModal = ({ onClose, onTodoCreated }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!title || !description) {
+        if (!title.trim() || !description.trim()) {
             toast.error("Please fill all fields");
             return;
         }
         setLoading(true);
         try {
-            const token = localStorage.getItem("token")
-            const response = await axios.post(
-                "http://localhost:2001/api/todos",
-                { title, description, },
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
+            const response = await axiosInstance.post(
+                "/todos",
+                {
+                    title: title.trim(),
+                    description: description.trim(),
+                })
 
             const newTodo = response.data.todo
-            console.log("New Todo", newTodo)
             toast.success("Todo created successfully");
             setTitle("")
             setDescription("")
             onTodoCreated(newTodo);
             onClose()
         } catch (error) {
-            console.error(error);
-
-            toast.error("Failed to create todo");
+            console.error("Failed to create todo:", error);
+            toast.error(
+                error.response?.data?.message || "Failed to create todo"
+            );
 
         } finally {
             setLoading(false);
@@ -87,20 +87,21 @@ const CreateTodoModal = ({ onCreate, onClose, onTodoCreated }) => {
                                 type="button"
                                 className="btn btn-ghost"
                                 onClick={onClose}
+                                disabled={loading}
                             >
                                 Cancel
                             </button>
 
                             <button
                                 type="submit"
-                                onClick={onCreate}
+
                                 className="btn btn-primary"
                                 disabled={loading}
                             >
                                 {loading ? (
                                     <>
                                         <span className="loading loading-spinner loading-sm"></span>
-                                        Updating...
+                                        Creating...
                                     </>
                                 ) : (
                                     "Create Todo"

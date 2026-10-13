@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 
-function DashboardHeader({onCreate}) {
-    const [name, setName] = useState()
-    const fullName = "Ahmad Testing At this tiime"
+function DashboardHeader({ onViewProfile, userName }) {
+    const [name, setName] = useState("")
+    const fullName = userName || "";
     useEffect(() => {
+       setName("");
+        if (!fullName) return;
         let index = 0
 
         const interval = setInterval(() => {
-            setName(fullName.slice(0, index + 1))
+            setName(fullName.slice(0, index+1))
             index++;
-            if (index === fullName.length) {
-                clearInterval(interval)
+            if (index >= fullName.length) {
+                clearInterval(interval);
             }
         }, 200)
         return () => clearInterval(interval);
-    },[])
+    }, [fullName])
 
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -36,9 +38,9 @@ function DashboardHeader({onCreate}) {
 
             {/* Quick Action */}
             <button className="btn btn-primary"
-             onClick={onCreate}
+                onClick={onViewProfile}
             >
-                + Create Todo
+                View Profile
             </button>
 
         </div>

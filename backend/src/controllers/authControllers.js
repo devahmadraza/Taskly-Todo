@@ -19,7 +19,21 @@ export const registerUser = async (req, res) => {
             });
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+        if (!emailRegex.test(email.trim())) {
+            return res.status(400).json({
+                message: "Please enter a valid email address",
+            });
+        }
+        const passwordRegex =
+            /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({
+                message:
+                    "Password must be at least 8 characters and include an uppercase letter, a number, and a special character",
+            });
+        }
         const existingUser = await User.findOne({ email })
         if (existingUser) {
             return res.status(400).json({ message: "User already exists", });
@@ -33,13 +47,13 @@ export const registerUser = async (req, res) => {
         res.status(201).json({
             message: "User registered successfully",
             user: {
-                name: user._id,
+                id: user._id,
                 name: user.name,
                 email: user.email,
             },
         })
 
-        console.log("hashed password", hashedPassword)
+   
 
         console.log("New User:", name, email)
 

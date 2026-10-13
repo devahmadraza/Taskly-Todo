@@ -1,4 +1,4 @@
-import { Pencil, Trash2, Calendar, } from "lucide-react";
+import { Pencil, Trash2, Calendar } from "lucide-react";
 
 const TodoCard = ({ todo, onEdit, onDelete, deletingId, onToggleComplete, completingId }) => {
     return (
@@ -26,22 +26,25 @@ const TodoCard = ({ todo, onEdit, onDelete, deletingId, onToggleComplete, comple
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-base-content/60 mt-2 overflow-clip">
-
-                    {todo.description}
-                </p>
+                {todo.description && (
+                    <p className="text-sm text-base-content/60 mt-2 break-words">
+                        {todo.description}
+                    </p>
+                )}
 
                 {/* Bottom information */}
                 <div className="divider my-1"></div>
 
-                <div className="flex items-center text-sm text-base-content/60">
-                    <Calendar size={16} className="mr-2" />
-                    {new Date(todo.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                    })}
-                </div>
+                {todo.createdAt && (
+                    <div className="flex items-center text-sm text-base-content/60">
+                        <Calendar size={16} className="mr-2 shrink-0" />
+                        {new Date(todo.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                        })}
+                    </div>
+                )}
 
                 {/* Actions */}
                 <div className="card-actions justify-end mt-2">
@@ -49,6 +52,10 @@ const TodoCard = ({ todo, onEdit, onDelete, deletingId, onToggleComplete, comple
                     <button
                         className="btn btn-sm btn-ghost"
                         onClick={() => onEdit(todo)}
+                        disabled={
+                            completingId === todo._id ||
+                            deletingId === todo._id
+                        }
                     >
                         <Pencil size={16} />
                         Edit
