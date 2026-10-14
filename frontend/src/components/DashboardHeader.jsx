@@ -32,7 +32,7 @@ function DashboardHeader({ onViewProfile, userName }) {
                 </h2>
 
                 <p className="mt-2 text-base-content/60">
-                    Stay organized and get things done with Taskly.
+                    Stay organized and get things done with Taskly Now.
                 </p>
             </div>
 
