@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react"
-import axios from "axios"
+import axiosInstance from "../utils/axiosInstance"
 import toast from "react-hot-toast";
 
 
@@ -17,12 +17,12 @@ const EditTodoModal = ({ todo, onClose, onTodoUpdated }) => {
         }
         setLoading(true);
         try {
-            const token = localStorage.getItem("token")
-            const response = await axios.put(
-                `http://localhost:2001/api/todos/${todo._id}`,
-                { title, description }, { headers: { Authorization: `Bearer ${token}`, }, }
+
+            const response = await axiosInstance.put(
+                `/todos/${todo._id}`,
+                { title: title.trim(), description: description.trim(), },
             )
-            console.log("Updated Todo:", response.data.todo);
+
             toast.success("Todo updated successfully");
             const updatedTodo = response.data.todo;
             onTodoUpdated(updatedTodo);
@@ -57,6 +57,7 @@ const EditTodoModal = ({ todo, onClose, onTodoUpdated }) => {
                         <button
                             type="button"
                             onClick={onClose}
+                            disabled={loading}
                             className="btn btn-sm btn-circle btn-ghost"
                         >
                             <X size={20} />
@@ -101,6 +102,7 @@ const EditTodoModal = ({ todo, onClose, onTodoUpdated }) => {
                             <button
                                 type="button"
                                 onClick={onClose}
+                                disabled={loading}
                                 className="btn btn-ghost"
                             >
                                 Cancel
