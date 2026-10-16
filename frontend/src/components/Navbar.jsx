@@ -113,7 +113,15 @@ function Navbar() {
           <li>
             <Link to="/">Home</Link>
           </li>
-
+          <li>
+            <Link to="/dashboard">Dashboard</Link>
+          </li>
+          <li>
+            <Link to="/settings">Settings</Link>
+          </li>
+          <li>
+            <Link to="/profile">Profile</Link>
+          </li>
           {!isLoggedIn ? (<>
             <li>
               <Link to="/login">Login</Link>
