@@ -100,7 +100,7 @@ function Navbar() {
           tabIndex={0}
           className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-40 p-2 shadow"
         >
-          <li>
+            <li>
             <Link to="/" onClick={handleHomeClick}>Home</Link>
           </li>
           <li>
@@ -118,7 +118,7 @@ function Navbar() {
             </li>
 
             <li>
-              <Link to="/register" className="btn btn-primary ">
+              <Link to="/register" className="btn btn-primary">
                 Get Started
               </Link>
             </li>
