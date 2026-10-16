@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+
 
 function Navbar() {
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -23,6 +26,22 @@ function Navbar() {
       window.removeEventListener("authChanged", updateAuth);
     };
   }, []);
+  const handleHomeClick = () => {
+    const protectedPages = ["/dashboard", "/settings", "/profile"];
+
+    const isProtectedPage = protectedPages.some(
+      (path) =>
+        location.pathname === path ||
+        location.pathname.startsWith(`${path}/`)
+    );
+
+    if (isProtectedPage && localStorage.getItem("token")) {
+      localStorage.removeItem("token");
+      window.dispatchEvent(new Event("authChanged"));
+    }
+
+    navigate("/");
+  };
   return (
     <div className="navbar bg-base-100 shadow-sm px-4 md:px-8">
       {/* Logo */}
@@ -37,7 +56,16 @@ function Navbar() {
         <ul className="menu menu-horizontal px-1 gap-2">
 
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/" onClick={handleHomeClick}>Home</Link>
+          </li>
+          <li>
+            <Link to="/dashboard">Dashboard</Link>
+          </li>
+          <li>
+            <Link to="/settings">Settings</Link>
+          </li>
+          <li>
+            <Link to="/profile">Profile</Link>
           </li>
           {!isLoggedIn ? (<>
             <li>

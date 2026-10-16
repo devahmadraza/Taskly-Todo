@@ -201,7 +201,14 @@ function Login() {
               </button>
 
             </form>
-
+            <div className="text-right mt-2">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             {/* Register Link */}
             <p className="text-center text-sm text-base-content/70 mt-4">
               Don't have an account?{" "}
