@@ -55,7 +55,7 @@ export const registerUser = async (req, res) => {
             },
         })
 
-   
+
 
         console.log("New User:", name, email)
 
@@ -116,9 +116,11 @@ export const getMe = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
+    console.log("FORGOT PASSWORD CONTROLLER REACHED");
+
     const { email } = req.body;
 
-    if (!email || typeof email !== "string" || !email.trim()) {
+    if (typeof email !== "string" || !email.trim()) {
       return res.status(400).json({
         message: "Please enter your email",
       });
@@ -130,39 +132,42 @@ export const forgotPassword = async (req, res) => {
       email: normalizedEmail,
     });
 
-    // Use the same response whether the account exists or not.
     const message =
       "If an account exists for that email, a reset link will be sent.";
 
     if (!user) {
+      console.log("Forgot password: no matching account");
       return res.status(200).json({ message });
     }
 
-    // Generate a secure random token.
+    // Generate a secure token
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    // Store only the token hash in MongoDB.
+    // Store only the token hash in MongoDB
     user.resetPasswordToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
 
-    // Token expires in 15 minutes.
-    user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
+    user.resetPasswordExpires = new Date(
+      Date.now() + 15 * 60 * 1000
+    );
 
     await user.save();
 
-    // Build the link using the raw token.
+    // Check frontend URL
     const frontendUrl = process.env.FRONTEND_URL;
 
     if (!frontendUrl) {
       throw new Error("FRONTEND_URL is not configured");
     }
 
+    // Define resetUrl BEFORE sending the email
     const resetUrl =
       `${frontendUrl.replace(/\/$/, "")}/reset-password/${resetToken}`;
 
-    await transporter.sendMail({
+    // Send exactly one email
+    const info = await transporter.sendMail({
       from: `"Taskly" <${process.env.EMAIL_USER}>`,
       to: user.email,
       subject: "Reset your Taskly password",
@@ -175,21 +180,24 @@ If you did not request this, you can ignore this email.`,
       html: `
         <h2>Reset your Taskly password</h2>
         <p>You requested a password reset.</p>
-        <p>
-          <a href="${resetUrl}">Reset Password</a>
-        </p>
+        <p><a href="${resetUrl}">Reset Password</a></p>
         <p>This link expires in 15 minutes.</p>
         <p>If you did not request this, you can ignore this email.</p>
       `,
     });
 
+    // Temporary delivery diagnostics
+    console.log("Taskly email accepted:", info.accepted.length > 0);
+    console.log("Taskly email rejected:", info.rejected.length > 0);
+    console.log("Taskly email message ID:", info.messageId);
+    console.log("Taskly SMTP response:", info.response);
+
     return res.status(200).json({ message });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    console.error("Forgot password error:", error.message);
 
     return res.status(500).json({
       message: "Unable to process your request. Please try again later.",
     });
   }
 };
-
