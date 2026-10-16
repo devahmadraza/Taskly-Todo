@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
-import axios from "axios"
+import axiosInstance from "../utils/axiosInstance"
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -83,7 +83,7 @@ function Register() {
 
     try {
       setLoading(true)
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         "http://localhost:2001/api/auth/register", {
         name,
         email,
