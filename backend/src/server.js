@@ -4,13 +4,19 @@ import authRoutes from "./routes/authRoutes.js"
 import testRoutes from "./routes/testRoutes.js";
 import todoRoutes from "./routes/todoRoutes.js";
 import dotenv from "dotenv";
+import cors from "cors";
+
 
 dotenv.config();
 import cors from "cors"
 const app = express()
 const PORT = process.env.PORT || 2001;
 
-app.use(cors())
+app.use(
+    cors({
+        origin: "https://taskly-todo-three.vercel.app",
+    })
+);
 app.use(express.json())
 
 app.use("/api/auth", authRoutes)
