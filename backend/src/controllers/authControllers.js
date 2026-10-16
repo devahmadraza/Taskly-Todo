@@ -2,6 +2,8 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
 
+import crypto from "crypto";
+
 export const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body
@@ -81,7 +83,7 @@ export const loginUser = async (req, res) => {
         const token = jwt.sign(
             { userId: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: "7d" }
+            { expiresIn: "5min" }
         )
         res.status(200).json({
             message: "Login Successfully",
@@ -110,3 +112,54 @@ export const getMe = async (req, res) => {
 
 
 }
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email || typeof email !== "string") {
+      return res.status(400).json({
+        message: "Please enter your email",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    // Use the same public response whether the account exists or not.
+    const message =
+      "If an account exists for that email, a reset link will be sent.";
+
+    if (!user) {
+      return res.status(200).json({ message });
+    }
+
+    // Generate a secure, unpredictable token.
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Store only the hash in MongoDB.
+    user.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    // Token expires after 15 minutes.
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+
+    await user.save();
+
+    // We'll email resetToken in the next step.
+    // Never send or save the token hash as the reset link.
+    return res.status(200).json({ message });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+
+    return res.status(500).json({
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+};
+
