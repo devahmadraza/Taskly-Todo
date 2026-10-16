@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 function Navbar() {
 
   const navigate = useNavigate();
-  const location = useLocation();
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -26,20 +26,10 @@ function Navbar() {
       window.removeEventListener("authChanged", updateAuth);
     };
   }, []);
-  const handleHomeClick = () => {
-    const protectedPages = ["/dashboard", "/settings", "/profile"];
 
-    const isProtectedPage = protectedPages.some(
-      (path) =>
-        location.pathname === path ||
-        location.pathname.startsWith(`${path}/`)
-    );
-
-    if (isProtectedPage && localStorage.getItem("token")) {
-      localStorage.removeItem("token");
-      window.dispatchEvent(new Event("authChanged"));
-    }
-
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    handleLogout();
     navigate("/");
   };
   return (
@@ -111,7 +101,7 @@ function Navbar() {
           className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-40 p-2 shadow"
         >
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/" onClick={handleHomeClick}>Home</Link>
           </li>
           <li>
             <Link to="/dashboard">Dashboard</Link>
