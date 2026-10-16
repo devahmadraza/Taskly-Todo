@@ -6,7 +6,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.2",
-    "nodemailer": "^10.1.1"
+    "nodemailer": "^10.1.2"
   },
   "name": "backend",
   "version": "1.0.0",

@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
-
+import transporter from "../utils/email.js";
 import crypto from "crypto";
 
 export const registerUser = async (req, res) => {
@@ -113,53 +113,90 @@ export const getMe = async (req, res) => {
 
 }
 
+
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email || typeof email !== "string") {
+    // 1. Validate email
+    if (typeof email !== "string" || !email.trim()) {
       return res.status(400).json({
         message: "Please enter your email",
       });
     }
 
+    // 2. Find user
     const normalizedEmail = email.trim().toLowerCase();
 
     const user = await User.findOne({
       email: normalizedEmail,
     });
 
-    // Use the same public response whether the account exists or not.
+    // Use the same response whether the account exists or not
     const message =
       "If an account exists for that email, a reset link will be sent.";
 
     if (!user) {
+      console.log("Forgot password: no matching account");
       return res.status(200).json({ message });
     }
 
-    // Generate a secure, unpredictable token.
+    // 3. Generate secure reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    // Store only the hash in MongoDB.
+    // Store only its hash in MongoDB
     user.resetPasswordToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
 
-    // Token expires after 15 minutes.
-    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+    // Token expires after 15 minutes
+    user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
 
     await user.save();
 
-    // We'll email resetToken in the next step.
-    // Never send or save the token hash as the reset link.
+    // 4. Build reset link
+    const frontendUrl = process.env.FRONTEND_URL;
+
+    if (!frontendUrl) {
+      throw new Error("FRONTEND_URL is not configured");
+    }
+
+    const resetUrl =
+      `${frontendUrl.replace(/\/$/, "")}/reset-password/${resetToken}`;
+
+    // 5. Send email
+    const info = await transporter.sendMail({
+      from: `"Taskly" <${process.env.EMAIL_USER}>`,
+      to: user.email,
+      subject: "Reset your Taskly password",
+      text: `You requested a password reset for Taskly.
+
+Open this link within 15 minutes to reset your password:
+${resetUrl}
+
+If you did not request this, you can ignore this email.`,
+      html: `
+        <h2>Reset your Taskly password</h2>
+        <p>You requested a password reset.</p>
+        <p><a href="${resetUrl}">Reset Password</a></p>
+        <p>This link expires in 15 minutes.</p>
+        <p>If you did not request this, you can ignore this email.</p>
+      `,
+    });
+
+    // 6. Diagnostic logs — don't log the reset token
+    console.log("Taskly email accepted:", info.accepted.length > 0);
+    console.log("Taskly email rejected:", info.rejected.length > 0);
+    console.log("Taskly email message ID:", info.messageId);
+    console.log("Taskly SMTP response:", info.response);
+
     return res.status(200).json({ message });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    console.error("Forgot password error:", error.message);
 
     return res.status(500).json({
-      message: "Something went wrong. Please try again later.",
+      message: "Unable to process your request. Please try again later.",
     });
   }
 };
-

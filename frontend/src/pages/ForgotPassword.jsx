@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import axiosInstance from "../utils/axiosInstance";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -15,13 +17,32 @@ function ForgotPassword() {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email.trim())) {
       toast.error("Please enter a valid email");
       return;
     }
 
-    // We'll connect the backend email API in a later step.
-    toast.success("Email validation successful");
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.post(
+        "/auth/forgot-password",
+        { email: email.trim() }
+      );
+
+      toast.success(
+        response.data.message || "Password reset request submitted"
+      );
+
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Unable to process your request. Please try again."
+      );
+      console.error("Forgot password error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,14 +79,23 @@ function ForgotPassword() {
                   className="input w-full"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                 />
               </fieldset>
 
               <button
                 type="submit"
                 className="btn btn-primary w-full mt-4"
+                disabled={loading}
               >
-                Send Reset Link
+                {loading ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm" />
+                    Sending...
+                  </>
+                ) : (
+                  "Send Reset Link"
+                )}
               </button>
             </form>
 
@@ -86,4 +116,3 @@ function ForgotPassword() {
 }
 
 export default ForgotPassword;
-
