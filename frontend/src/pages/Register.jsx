@@ -82,7 +82,7 @@ function Register() {
     try {
       setLoading(true)
       const response = await axiosInstance.post(
-        "api/auth/register", {
+        "/auth/register", {
         name,
         email,
         password,
