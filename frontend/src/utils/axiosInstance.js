@@ -2,8 +2,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://taskly-backend-sthl.onrender.com/api",
-  // baseURL: "http://localhost:2001/api",
+  // baseURL: "https://taskly-backend-sthl.onrender.com/api",
+  baseURL: "http://localhost:2001/api",
 });
 
 // 1. Attach JWT token to outgoing requests
