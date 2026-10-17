@@ -84,7 +84,7 @@ function Register() {
     try {
       setLoading(true)
       const response = await axiosInstance.post(
-        "http://localhost:2001/api/auth/register", {
+        "api/auth/register", {
         name,
         email,
         password,
