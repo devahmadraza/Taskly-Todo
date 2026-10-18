@@ -27,7 +27,7 @@ const TodoCard = ({ todo, onEdit, onDelete, deletingId, onToggleComplete, comple
 
                 {/* Description */}
                 {todo.description && (
-                    <p className="text-sm text-base-content/60 mt-2 wrap-break">
+                    <p className="text-sm text-base-content/60 mt-2 break-words">
                         {todo.description}
                     </p>
                 )}
