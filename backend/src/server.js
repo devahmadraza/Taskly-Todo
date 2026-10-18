@@ -12,10 +12,23 @@ dotenv.config();
 const app = express()
 const PORT = process.env.PORT || 2001;
 
+
+const allowedOrigins = [
+  "https://taskly-todo-three.vercel.app",
+  "https://taskly-todo-frontend.onrender.com",
+];
+
 app.use(
-    cors({
-        origin: "https://taskly-todo-three.vercel.app",
-    })
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header, such as Postman
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+  })
 );
 app.use(express.json())
 

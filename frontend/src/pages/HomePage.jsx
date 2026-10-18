@@ -17,24 +17,3 @@ const HomePage = () => {
 }
 
 export default HomePage
-
-
-// Home
-// │
-// ├── Navbar
-// │
-// ├── Hero Section
-// │   ├── Heading
-// │   ├── Description
-// │   ├── Get Started button
-// │   └── View Demo button
-// │
-// ├── Features Section
-// │   ├── Create Tasks
-// │   ├── Track Progress
-// │   └── Stay Organized
-// │
-// ├── CTA Section
-// │   └── Get Started
-// │
-// └── Footer
