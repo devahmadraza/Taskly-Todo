@@ -116,7 +116,7 @@ export const getMe = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
-    console.log("FORGOT PASSWORD CONTROLLER REACHED");
+   
 
     const { email } = req.body;
 

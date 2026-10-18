@@ -102,7 +102,6 @@ const CreateTodoModal = ({ onClose, onTodoCreated }) => {
 
                             <button
                                 type="submit"
-
                                 className="btn btn-primary"
                                 disabled={loading}
                             >
