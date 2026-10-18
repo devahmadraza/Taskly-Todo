@@ -28,12 +28,20 @@ const CreateTodoModal = ({ onClose, onTodoCreated }) => {
             onTodoCreated(newTodo);
             onClose()
         } catch (error) {
-            console.error("Failed to create todo:", error);
-            toast.error(
-                error.response?.data?.message || "Failed to create todo"
-            );
+            if (!navigator.onLine || error.code === "ERR_NETWORK") {
+                toast.error(
+                    "Connection problem. Check your internet and try again."
+                );
+            } else if (error.response) {
+                toast.error(
+                    error.response.data?.message || "Failed to create todo"
+                );
+            } else {
+                toast.error("Something went wrong. Please try again.");
+            }
 
-        } finally {
+        }
+        finally {
             setLoading(false);
         }
 
